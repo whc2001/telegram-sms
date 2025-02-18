@@ -239,7 +239,16 @@ class SMSReceiver : BroadcastReceiver() {
                     continue
                 }
 
-                if (messageBody.contains(blackListItem)) {
+                var isSpam = false
+                if(blackListItem.startsWith("regex:")) {
+                    val blackListItemRegex = Regex(blackListItem.substring(6))
+                    isSpam = blackListItemRegex.containsMatchIn(messageBody)
+                }
+                else {
+                    isSpam = messageBody.contains(blackListItem)
+                }
+
+                if (isSpam) {
                     val simpleDateFormat =
                         SimpleDateFormat(context.getString(R.string.time_format), Locale.UK)
                     val writeMessage = """
